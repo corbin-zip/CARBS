@@ -7,7 +7,7 @@
 ### OPTIONS AND VARIABLES ###
 
 dotfilesrepo="https://github.com/corbin-zip/dotfiles.git"
-progsfile="https://raw.githubusercontent.com/corbin-zip/CARBS/master/static/progs.csv"
+progsfile="https://raw.githubusercontent.com/corbin-zip/CARBS/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
 export TERM=ansi

@@ -5,8 +5,8 @@
 On an Arch-based distribution as root, run the following:
 
 ```
-curl -LO raw.githubusercontent.com/corbin-zip/CARBS/master/static/larbs.sh
-sh larbs.sh
+curl -LO raw.githubusercontent.com/corbin-zip/CARBS/master/carbs.sh
+sh carbs.sh
 ```
 
 That's it.
@@ -22,7 +22,7 @@ with a fully configured diving-board for work or more customization.
 
 ## Customization
 
-By default, CARBS uses the programs [here in progs.csv](static/progs.csv) and installs
+By default, CARBS uses the programs [here in progs.csv](progs.csv) and installs
 [my dotfiles repo here](https://github.com/corbin-zip/dotfiles),
 but you can easily change this by either modifying the default variables at the
 beginning of the script or giving the script one of these options:
