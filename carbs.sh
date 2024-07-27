@@ -255,6 +255,21 @@ installffaddons(){
 #category-more-from-mozilla { display: none !important }" > "$pdir/chrome/userContent.css"
 }
 
+setup_stow() {
+	## Set up stow
+	
+	# Grab dotfiles repo
+	putgitrepo "$dotfilesrepo" "$repodir/dotfiles" "$repobranch"
+
+	# Remove existing symlinks
+    rm -rf "/home/$name/.zprofile" "/home/$name/.xprofile" "/home/$name/.local/share/bg" "/home/$name/.config/sxiv" "/home/$name/.gtkrc-2.0"
+
+	# Hacky way of maintaining file structure of repo but still using stow
+    cd "$repodir/dotfiles" || error "Didn't create dotfiles directory"
+    stow --target=/home/"$name" . --adopt
+    cd - || error "Strange error..."
+}
+
 finalize() {
 	whiptail --title "All done!" \
 		--msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Corbin" 13 80
@@ -330,6 +345,8 @@ putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
 [ -z "/home/$name/.config/newsboat/urls" ] &&
 	echo "$rssurls" > "/home/$name/.config/newsboat/urls"
 rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml"
+
+setup_stow
 
 # Install vim plugins if not alread present.
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
