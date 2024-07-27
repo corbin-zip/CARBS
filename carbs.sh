@@ -342,8 +342,12 @@ installationloop
 # Install the dotfiles in the user's home directory, but remove .git dir and
 # other unnecessary files.
 putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-[ -z "/home/$name/.config/newsboat/urls" ] &&
-	echo "$rssurls" > "/home/$name/.config/newsboat/urls"
+
+if [ ! -f "/home/$name/.config/newsboat/urls" ]; then
+    mkdir -p "/home/$name/.config/newsboat"
+    echo "$rssurls" > "/home/$name/.config/newsboat/urls"
+fi
+
 rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml"
 
 setup_stow
