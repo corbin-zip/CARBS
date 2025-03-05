@@ -119,7 +119,7 @@ manualinstall() {
 			sudo -u "$name" git pull --force origin master
 		}
 	cd "$repodir/$1" || exit 1
-	sudo -u "$name" -D "$repodir/$1" \
+	sudo -u "$name" \
 		makepkg --noconfirm -si >/dev/null 2>&1 || return 1
 }
 
@@ -325,13 +325,11 @@ installationloop
 # Install the dotfiles in the user's home directory, but remove .git dir and
 # other unnecessary files.
 putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-
-if [ ! -f "/home/$name/.config/newsboat/urls" ]; then
-    mkdir -p "/home/$name/.config/newsboat"
-    echo "$rssurls" > "/home/$name/.config/newsboat/urls"
-fi
-
 rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml"
+
+# Write urls for newsboat if it doesn't already exist
+[ -s "/home/$name/.config/newsboat/urls" ] ||
+	sudo -u "$name" echo "$rssurls" > "/home/$name/.config/newsboat/urls"
 
 setup_stow
 
