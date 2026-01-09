@@ -239,19 +239,21 @@ installffaddons(){
 }
 
 setup_stow() {
-	## Set up stow
+  putgitrepo "$dotfilesrepo" "$repodir/dotfiles" "$repobranch"
 
-	# Grab dotfiles repo
-	putgitrepo "$dotfilesrepo" "$repodir/dotfiles" "$repobranch"
+  rm -rf "/home/$name/.zprofile" "/home/$name/.xprofile" \
+         "/home/$name/.local/share/bg" "/home/$name/.config/sxiv" \
+         "/home/$name/.gtkrc-2.0"
 
-	# Remove existing symlinks
-    rm -rf "/home/$name/.zprofile" "/home/$name/.xprofile" "/home/$name/.local/share/bg" "/home/$name/.config/sxiv" "/home/$name/.gtkrc-2.0"
+  chown -R "$name:wheel" "$repodir/dotfiles"
 
-	# Hacky way of maintaining file structure of repo but still using stow
-    cd "$repodir/dotfiles" || error "Didn't create dotfiles directory"
-    stow --target=/home/"$name" . --adopt
-    cd - || error "Strange error..."
+  sudo -u "$name" -H stow \
+    --dir="$repodir/dotfiles" \
+    --target="/home/$name" \
+    --adopt \
+    .
 }
+
 
 finalize() {
 	whiptail --title "All done!" \
