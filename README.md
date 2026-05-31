@@ -31,6 +31,8 @@ beginning of the script or giving the script one of these options:
 - `-p`: custom programs list/dependencies (local file or URL)
 - `-a`: a custom AUR helper (must be able to install with `-S` unless you
   change the relevant line in the script
+- `-t`: test mode — checks that all programs in the list are still available
+  without installing anything (does not require root)
 
 ### The `progs.csv` list
 
