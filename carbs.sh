@@ -23,10 +23,11 @@ https://artixlinux.org/feed.php \"tech\"
 https://www.archlinux.org/feeds/news/ \"tech\"
 https://github.com/LukeSmithxyz/voidrice/commits/master.atom \"~LARBS dotfiles repo\""
 
-while getopts ":r:p:a:" o; do case "${o}" in
+while getopts ":r:p:a:t" o; do case "${o}" in
 	r) dotfilesrepo=${OPTARG} ;;
 	p) progsfile=${OPTARG} ;;
 	a) aurhelper=${OPTARG} ;;
+	t) testmode=1 ;;
 	*) printf "Invalid option: -%s\\n" "${OPTARG}" && exit 1 ;;
 esac done
 
@@ -262,6 +263,40 @@ setup_stow() {
 }
 
 
+testpkg() {
+	case "$1" in
+		A)
+			result=$(curl -sf "https://aur.archlinux.org/rpc/v5/info?arg[]=$2") || return 1
+			echo "$result" | grep -q '"resultcount":0' && return 1
+			return 0 ;;
+		G)
+			git ls-remote "$2" HEAD >/dev/null 2>&1 ;;
+		P)
+			curl -sf "https://pypi.org/pypi/$2/json" >/dev/null ;;
+		*)
+			pacman -Si "$2" >/dev/null 2>&1 ;;
+	esac
+}
+
+testprogs() {
+	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
+		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
+	total=$(wc -l </tmp/progs.csv)
+	missing=0
+	while IFS=, read -r tag program comment; do
+		progname="${program##*/}"
+		progname="${progname%.git}"
+		if testpkg "$tag" "$program"; then
+			printf "[ OK ]  %s\n" "$progname"
+		else
+			printf "[FAIL]  %s\n" "$progname"
+			missing=$((missing + 1))
+		fi
+	done </tmp/progs.csv
+	printf "\n%d of %d packages OK.\n" "$((total - missing))" "$total"
+	[ "$missing" -eq 0 ]
+}
+
 finalize() {
 	whiptail --title "All done!" \
 		--msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Corbin" 13 80
@@ -270,6 +305,8 @@ finalize() {
 ### THE ACTUAL SCRIPT ###
 
 ### This is how everything happens in an intuitive format and order.
+
+[ "${testmode}" = "1" ] && { testprogs; exit $?; }
 
 # Check if user is root on Arch distro. Install whiptail.
 pacman --noconfirm --needed -Sy libnewt ||
