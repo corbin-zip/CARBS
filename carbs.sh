@@ -23,6 +23,13 @@ https://artixlinux.org/feed.php \"tech\"
 https://www.archlinux.org/feeds/news/ \"tech\"
 https://github.com/LukeSmithxyz/voidrice/commits/master.atom \"~LARBS dotfiles repo\""
 
+while getopts ":r:p:a:" o; do case "${o}" in
+	r) dotfilesrepo=${OPTARG} ;;
+	p) progsfile=${OPTARG} ;;
+	a) aurhelper=${OPTARG} ;;
+	*) printf "Invalid option: -%s\\n" "${OPTARG}" && exit 1 ;;
+esac done
+
 ### FUNCTIONS ###
 
 installpkg() {
