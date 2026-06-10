@@ -17,6 +17,18 @@ CARBS is a script that installs and configures a minimal, terminal-and-vim based
 
 It can be run on a fresh install of Arch or Artix Linux and leaves you with a fully configured diving-board for work or further customization.
 
+## CARBS as a fork
+
+The biggest difference is in what the script deploys. [The dotfiles](https://github.com/corbin-zip/dotfiles) have grown well past their voidrice roots: additional scripts (statusbar modules, sync cron jobs, dmenu utilities), a streamlined theming pipeline, and various bugfixes. The suckless forks ([dwm](https://github.com/corbin-zip/dwm), [dwmblocks](https://github.com/corbin-zip/dwmblocks), [dmenu](https://github.com/corbin-zip/dmenu), [st](https://github.com/corbin-zip/st)) are patched up to their current upstream versions rather than frozen in the past, with further enhancements, bugfixes, and performance work described in each repo's README.
+
+The script itself also differs --
+
+- Dotfiles are deployed with GNU `stow` instead of copied into `$HOME`. The repo stays a normal working clone in `~/.local/src/dotfiles` and your home directory is symlinks into it, so updating or committing config changes is just git.
+- A second, private dotfiles repo can be stowed on top of the public one with `-s`, for the configs that don't belong on GitHub.
+- Test mode (`-t`) validates every entry in the program list against the official repos, the AUR, and git without installing anything, so a renamed or dropped package is caught before it dies an hour into an install.
+- The script is plain POSIX `sh` and written to be idempotent: re-running it on an already-installed system is safe.
+- A pile of bugfixes over upstream, many hunted down with Claude Code running Fable 5. See the commit history.
+
 ## Customization
 
 By default, CARBS installs the programs listed in [progs.csv](progs.csv) and [my dotfiles](https://github.com/corbin-zip/dotfiles). You can change either by editing the variables at the top of the script, or by passing options:
