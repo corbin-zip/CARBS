@@ -408,7 +408,7 @@ setup_stow_private
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
 
 # Most important command! Get rid of the beep!
-rmmod pcspkr
+rmmod pcspkr 2>/dev/null
 echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 
 # Make zsh the default shell for the user.
