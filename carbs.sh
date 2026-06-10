@@ -241,7 +241,7 @@ installffaddons(){
 		id="${id##*\"}"
 		mv "$file" "$pdir/extensions/$id.xpi"
 	done
-	chown -R "$name:$name" "$pdir/extensions"
+	chown -R "$name:wheel" "$pdir/extensions"
 	# Fix a Vim Vixen bug with dark mode not fixed on upstream:
 	sudo -u "$name" mkdir -p "$pdir/chrome"
 	[ ! -f  "$pdir/chrome/userContent.css" ] && sudo -u "$name" echo ".vimvixen-console-frame { color-scheme: light !important; }
