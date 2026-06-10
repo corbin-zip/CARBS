@@ -235,11 +235,11 @@ installffaddons(){
 			addonurl="$(curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${addon}/" | grep -o 'https://addons.mozilla.org/firefox/downloads/file/[^"]*')"
 		fi
 		file="${addonurl##*/}"
-		sudo -u "$name" curl -LOs "$addonurl" > "$addontmp/$file"
-		id="$(unzip -p "$file" manifest.json | grep "\"id\"")"
+		curl -Lso "$addontmp/$file" "$addonurl"
+		id="$(unzip -p "$addontmp/$file" manifest.json | grep "\"id\"")"
 		id="${id%\"*}"
 		id="${id##*\"}"
-		mv "$file" "$pdir/extensions/$id.xpi"
+		mv "$addontmp/$file" "$pdir/extensions/$id.xpi"
 	done
 	chown -R "$name:wheel" "$pdir/extensions"
 	# Fix a Vim Vixen bug with dark mode not fixed on upstream:
