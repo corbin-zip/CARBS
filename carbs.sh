@@ -264,6 +264,10 @@ setup_stow() {
     --target="/home/$name" \
     --adopt \
     .
+
+  # --adopt moves conflicting host files (e.g. skel's .bashrc) into the
+  # repo, overwriting our versions; check them back out to keep ours.
+  sudo -u "$name" git -C "$repodir/dotfiles" checkout -- .
 }
 
 
@@ -277,6 +281,8 @@ setup_stow_private() {
     --target="/home/$name" \
     --adopt \
     .
+
+  sudo -u "$name" git -C "$repodir/dotfiles-private" checkout -- .
 }
 
 
