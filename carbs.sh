@@ -225,7 +225,9 @@ makeuserjs(){
 installffaddons(){
 	addonlist="ublock-origin decentraleyes istilldontcareaboutcookies keepassxc-browser darkreader vimium-c tab-volume newtab-adapter privacy-redirect xbs"
 	addontmp="$(mktemp -d)"
-	trap "rm -fr $addontmp" HUP INT QUIT TERM PWR EXIT
+	# This trap replaces the sudoers-temp one set below, so it must keep
+	# cleaning that up too or a crash here leaves passwordless sudo behind.
+	trap "rm -fr $addontmp /etc/sudoers.d/larbs-temp" HUP INT QUIT TERM PWR EXIT
 	IFS=' '
 	sudo -u "$name" mkdir -p "$pdir/extensions/"
 	for addon in $addonlist; do
