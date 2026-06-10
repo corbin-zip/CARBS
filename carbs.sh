@@ -7,6 +7,7 @@
 ### OPTIONS AND VARIABLES ###
 
 dotfilesrepo="https://github.com/corbin-zip/dotfiles.git"
+privdotfilesrepo=""
 progsfile="https://raw.githubusercontent.com/corbin-zip/CARBS/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
@@ -23,8 +24,9 @@ https://artixlinux.org/feed.php \"tech\"
 https://www.archlinux.org/feeds/news/ \"tech\"
 https://github.com/LukeSmithxyz/voidrice/commits/master.atom \"~LARBS dotfiles repo\""
 
-while getopts ":r:p:a:t" o; do case "${o}" in
+while getopts ":r:s:p:a:t" o; do case "${o}" in
 	r) dotfilesrepo=${OPTARG} ;;
+	s) privdotfilesrepo=${OPTARG} ;;
 	p) progsfile=${OPTARG} ;;
 	a) aurhelper=${OPTARG} ;;
 	t) testmode=1 ;;
@@ -263,6 +265,19 @@ setup_stow() {
 }
 
 
+setup_stow_private() {
+  [ -z "$privdotfilesrepo" ] && return 0
+  whiptail --infobox "Downloading and installing private config files..." 7 60
+  putgitrepo "$privdotfilesrepo" "$repodir/dotfiles-private" "$repobranch"
+  chown -R "$name:wheel" "$repodir/dotfiles-private"
+  sudo -u "$name" -H stow \
+    --dir="$repodir/dotfiles-private" \
+    --target="/home/$name" \
+    --adopt \
+    .
+}
+
+
 testpkg() {
 	case "$1" in
 		A)
@@ -373,6 +388,8 @@ installationloop
 	sudo -u "$name" echo "$rssurls" > "/home/$name/.config/newsboat/urls"
 
 setup_stow
+
+setup_stow_private
 
 # Install vim plugins if not alread present.
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
