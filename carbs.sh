@@ -444,7 +444,11 @@ profilesini="$browserdir/profiles.ini"
 
 # Start librewolf headless so it generates a profile. Then get that profile in a variable.
 sudo -u "$name" librewolf --headless >/dev/null 2>&1 &
-sleep 1
+i=0
+until [ -f "$profilesini" ] || [ "$i" -ge 30 ]; do
+	sleep 1
+	i=$((i + 1))
+done
 profile="$(sed -n "/Default=.*.default-default/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
