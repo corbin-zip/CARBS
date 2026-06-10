@@ -192,13 +192,13 @@ installationloop() {
 putgitrepo() {
 	# Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
 	whiptail --infobox "Downloading and installing config files..." 7 60
-	[ -z "$3" ] && branch="master" || branch="$repobranch"
+	[ -z "$3" ] && branch="master" || branch="$3"
 	dir=$(mktemp -d)
 	[ ! -d "$2" ] && mkdir -p "$2"
 	chown "$name":wheel "$dir" "$2"
 	sudo -u "$name" git -C "$repodir" clone --depth 1 \
 		--single-branch --no-tags -q --recursive -b "$branch" \
-		--recurse-submodules "$1" "$dir"
+		--recurse-submodules "$1" "$dir" || return 1
 	sudo -u "$name" cp -rfT "$dir" "$2"
 }
 
@@ -251,7 +251,8 @@ installffaddons(){
 }
 
 setup_stow() {
-  putgitrepo "$dotfilesrepo" "$repodir/dotfiles" "$repobranch"
+  putgitrepo "$dotfilesrepo" "$repodir/dotfiles" "$repobranch" ||
+    error "Failed to clone dotfiles repo."
 
   rm -rf "/home/$name/.zprofile" "/home/$name/.xprofile" \
          "/home/$name/.local/share/bg" "/home/$name/.config/sxiv" \
@@ -274,7 +275,8 @@ setup_stow() {
 setup_stow_private() {
   [ -z "$privdotfilesrepo" ] && return 0
   whiptail --infobox "Downloading and installing private config files..." 7 60
-  putgitrepo "$privdotfilesrepo" "$repodir/dotfiles-private" "$repobranch"
+  putgitrepo "$privdotfilesrepo" "$repodir/dotfiles-private" "$repobranch" ||
+    error "Failed to clone private dotfiles repo."
   chown -R "$name:wheel" "$repodir/dotfiles-private"
   sudo -u "$name" -H stow \
     --dir="$repodir/dotfiles-private" \
