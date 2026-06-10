@@ -172,7 +172,7 @@ pipinstall() {
 }
 
 installationloop() {
-	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
+	([ -f "$progsfile" ] && sed '/^#/d' "$progsfile" >/tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
 	total=$(wc -l </tmp/progs.csv)
 	aurinstalled=$(pacman -Qqm)
@@ -294,7 +294,7 @@ testpkg() {
 }
 
 testprogs() {
-	([ -f "$progsfile" ] && cp "$progsfile" /tmp/progs.csv) ||
+	([ -f "$progsfile" ] && sed '/^#/d' "$progsfile" >/tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
 	total=$(wc -l </tmp/progs.csv)
 	missing=0
