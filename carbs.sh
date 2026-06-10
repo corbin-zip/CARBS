@@ -119,7 +119,7 @@ Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
 manualinstall() {
 	# Installs $1 manually. Used only for AUR helper here.
 	# Should be run after repodir is created and var is set.
-	pacman -Qq "$1" && return 0
+	pacman -Qq "$1" >/dev/null 2>&1 && return 0
 	whiptail --infobox "Installing \"$1\" manually." 7 50
 	sudo -u "$name" mkdir -p "$repodir/$1"
 	sudo -u "$name" git -C "$repodir" clone --depth 1 --single-branch \
