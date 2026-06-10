@@ -203,6 +203,15 @@ vimplugininstall() {
 	sudo -u "$name" nvim -c "PlugInstall|q|q"
 }
 
+codeextinstall() {
+	# Installs VS Code extensions. Idempotent: --install-extension is a
+	# no-op for extensions that are already installed.
+	whiptail --infobox "Installing VS Code extensions..." 7 60
+	for ext in dlasagno.wal-theme vscodevim.vim; do
+		sudo -u "$name" -H code-insiders --install-extension "$ext" >/dev/null 2>&1
+	done
+}
+
 makeuserjs(){
 	# Get the Arkenfox user.js and prepare it.
 	arkenfox="$pdir/arkenfox.js"
@@ -396,6 +405,9 @@ setup_stow_private
 
 # Install vim plugins if not alread present.
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
+
+# Install VS Code extensions (only if VS Code made it in via progs.csv).
+command -v code-insiders >/dev/null 2>&1 && codeextinstall
 
 # Most important command! Get rid of the beep!
 rmmod pcspkr 2>/dev/null
