@@ -164,13 +164,6 @@ aurinstall() {
 	sudo -u "$name" $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
 }
 
-pipinstall() {
-	whiptail --title "CARBS Installation" \
-		--infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 9 70
-	[ -x "$(command -v "pip")" ] || installpkg python-pip >/dev/null 2>&1
-	yes | pip install "$1"
-}
-
 installationloop() {
 	([ -f "$progsfile" ] && sed '/^#/d' "$progsfile" >/tmp/progs.csv) ||
 		curl -Ls "$progsfile" | sed '/^#/d' >/tmp/progs.csv
@@ -183,7 +176,6 @@ installationloop() {
 		case "$tag" in
 		"A") aurinstall "$program" "$comment" ;;
 		"G") gitmakeinstall "$program" "$comment" ;;
-		"P") pipinstall "$program" "$comment" ;;
 		*) maininstall "$program" "$comment" ;;
 		esac
 	done </tmp/progs.csv
@@ -296,8 +288,6 @@ testpkg() {
 			return 0 ;;
 		G)
 			git ls-remote "$2" HEAD >/dev/null 2>&1 ;;
-		P)
-			curl -sf "https://pypi.org/pypi/$2/json" >/dev/null ;;
 		*)
 			pacman -Si "$2" >/dev/null 2>&1 ;;
 	esac
