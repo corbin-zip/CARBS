@@ -383,13 +383,16 @@ $aurhelper -Y --save --devel
 # and all build dependencies are installed.
 installationloop
 
-# Write urls for newsboat if it doesn't already exist
-[ -s "/home/$name/.config/newsboat/urls" ] ||
-	sudo -u "$name" echo "$rssurls" > "/home/$name/.config/newsboat/urls"
-
 setup_stow
 
 setup_stow_private
+
+# Write urls for newsboat if it doesn't already exist
+[ -s "/home/$name/.config/newsboat/urls" ] || {
+	mkdir -p "/home/$name/.config/newsboat"
+	echo "$rssurls" >"/home/$name/.config/newsboat/urls"
+	chown -R "$name:wheel" "/home/$name/.config/newsboat"
+}
 
 # Install vim plugins if not alread present.
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
