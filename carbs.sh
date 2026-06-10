@@ -104,7 +104,7 @@ refreshkeys() {
 		pacman --noconfirm -S archlinux-keyring >/dev/null 2>&1
 		;;
 	*)
-		whiptail --infobox "Enabling Arch Repositories for more a more extensive software collection..." 7 40
+		whiptail --infobox "Enabling Arch Repositories for a more extensive software collection..." 7 40
 		pacman --noconfirm --needed -S \
 			artix-keyring artix-archlinux-support >/dev/null 2>&1
 		grep -q "^\[extra\]" /etc/pacman.conf ||
