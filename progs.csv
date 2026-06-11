@@ -72,7 +72,11 @@ A,simple-mtpfs,"enables the mounting of cell phones."
 A,htop-vim,"is a graphical and colorful system monitor."
 G,https://github.com/corbin-zip/dwmblocks.git,"serves as the modular status bar."
 G,https://github.com/corbin-zip/dmenu.git,"runs commands and provides a UI for selection."
+# st builds from master (classic scrollback) by default; for scrollback that
+# reflows on window resize, swap the line below for the commented one.
+# See https://github.com/corbin-zip/st for the differences.
 G,https://github.com/corbin-zip/st.git,"is my custom build of suckless's terminal emulator."
+#G,https://github.com/corbin-zip/st.git#reflow,"is my custom build of suckless's terminal emulator (reflow branch)."
 G,https://github.com/corbin-zip/dwm.git,"is the window manager."
 A,mutt-wizard-git,"is a light-weight terminal-based email system."
 A,vesktop-bin,"is like Discord but more better."

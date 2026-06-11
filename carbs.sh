@@ -140,16 +140,22 @@ maininstall() {
 }
 
 gitmakeinstall() {
-	progname="${1##*/}"
+	# Optional branch selection: a `G` entry may end in `#branch`
+	# (e.g. .../st.git#reflow); without it the default branch is used.
+	gitrepourl="${1%%#*}"
+	gitbranch="${1#*#}"
+	[ "$gitbranch" = "$1" ] && gitbranch=""
+	progname="${gitrepourl##*/}"
 	progname="${progname%.git}"
 	dir="$repodir/$progname"
 	whiptail --title "CARBS Installation" \
-		--infobox "Installing \`$progname\` ($n of $total) via \`git\` and \`make\`. $(basename "$1") $2" 8 70
+		--infobox "Installing \`$progname\` ($n of $total) via \`git\` and \`make\`. $(basename "$gitrepourl") $2" 8 70
 	sudo -u "$name" git -C "$repodir" clone --depth 1 --single-branch \
-		--no-tags -q "$1" "$dir" ||
+		${gitbranch:+--branch=$gitbranch} \
+		--no-tags -q "$gitrepourl" "$dir" ||
 		{
 			cd "$dir" || return 1
-			sudo -u "$name" git pull --force origin master
+			sudo -u "$name" git pull --force origin "${gitbranch:-master}"
 		}
 	cd "$dir" || exit 1
 	make >/dev/null 2>&1
@@ -296,7 +302,11 @@ testpkg() {
 			echo "$result" | grep -q '"resultcount":0' && return 1
 			return 0 ;;
 		G)
-			git ls-remote "$2" HEAD >/dev/null 2>&1 ;;
+			gitrepourl="${2%%#*}"
+			gitbranch="${2#*#}"
+			[ "$gitbranch" = "$2" ] && gitbranch="HEAD"
+			# ls-remote exits 0 even for a missing ref, so check for output
+			[ -n "$(git ls-remote "$gitrepourl" "$gitbranch" 2>/dev/null)" ] ;;
 		*)
 			pacman -Si "$2" >/dev/null 2>&1 ;;
 	esac
@@ -309,6 +319,7 @@ testprogs() {
 	missing=0
 	while IFS=, read -r tag program comment; do
 		progname="${program##*/}"
+		progname="${progname%%#*}"
 		progname="${progname%.git}"
 		if testpkg "$tag" "$program"; then
 			printf "[ OK ]  %s\n" "$progname"

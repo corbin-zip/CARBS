@@ -47,9 +47,25 @@ The first column is a tag that determines how the program is installed: "" (blan
 
 The second column is the name of the program in the repository (or the link to the git repository), and the third column is a description: a verb phrase that CARBS prints as part of a sentence during installation. The descriptions also double as documentation for anyone reading the CSV who wants to install things manually.
 
+For `G` entries, the URL may end in `#branch` to build a specific branch instead of the repo's default (e.g. `https://github.com/corbin-zip/st.git#reflow`). Test mode verifies that the branch exists.
+
 Programs are installed from top to bottom, so if one program depends on another, order them accordingly.
 
 If a description contains commas, wrap the whole description in double quotes so it parses correctly.
+
+### Choosing an st build
+
+[My st fork](https://github.com/corbin-zip/st) has two long-lived branches: `master`, with the classic scrollback patch & related fixes (see below), and `reflow`, where scrollback rewraps when the window is resized. CARBS builds `master` by default. To get the reflow build instead, edit the st line in `progs.csv` to point at the branch:
+
+```
+G,https://github.com/corbin-zip/st.git#reflow,"is my custom build of suckless's terminal emulator (reflow branch)."
+```
+
+A commented-out copy of that line already sits next to the default in `progs.csv`, so you can just swap which one is active. The st repo's README covers the differences between the two builds in more detail.
+
+#### classic scrollback
+
+Traditionally with this patch if you were to resize the window small and then large again, you would lose text that was hidden during the resize; this has been resolved on my `master` st branch, which I feel makes classic scrollback still a perfectly viable option over the more "modern" `reflow`.
 
 ### The script itself
 
