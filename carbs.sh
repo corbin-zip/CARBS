@@ -482,6 +482,16 @@ echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-larbs-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
 
+# Configure earlyoom: never pick the display stack, prefer memory-hungry
+# claude/node processes. systemd-oomd must stay off: in a startx session the
+# whole desktop is one cgroup, so oomd kills the entire session at once.
+cat >/etc/default/earlyoom <<'EOF'
+# Options to pass to earlyoom (deployed by carbs.sh).
+EARLYOOM_ARGS="-r 3600 --avoid '(^|/)(init|systemd|Xorg|dwm|dwmblocks|st|sshd)$' --prefer '(^|/)(claude|node)$'"
+EOF
+[ "$(readlink -f /sbin/init)" = "/usr/lib/systemd/systemd" ] &&
+	systemctl enable earlyoom >/dev/null 2>&1
+
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
 
